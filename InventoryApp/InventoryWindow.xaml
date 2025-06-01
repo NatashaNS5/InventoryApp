@@ -59,8 +59,20 @@
         </DataGrid>
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
             <TextBlock x:Name="DiscrepancyMessageTextBlock" Foreground="Red" Margin="0,0,10,0"/>
-            <Button x:Name="SaveButton" Content="Сохранить" Click="Save_Click" Margin="5"/>
-            <Button x:Name="ApproveButton" Content="Утвердить (Директор)" Click="Approve_Click" Margin="5"/>
+            <Button x:Name="SaveButton" Content="Сохранить" Click="Save_Click" Margin="5">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <Button x:Name="ApproveButton" Content="Утвердить (Директор)" Click="Approve_Click" Margin="5">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

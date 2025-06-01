@@ -17,11 +17,41 @@
             <TextBlock Text="Информационная система" FontSize="18" FontWeight="Bold" Margin="10,0,0,0"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Margin="10">
-            <Button Content="Инвентаризация" Click="OpenInventory_Click" Margin="5"/>
-            <Button Content="Список заказов" Click="OpenOrders_Click" Margin="5"/>
-            <Button Content="Оформление заказа" Click="OpenOrderForm_Click" Margin="5"/>
-            <Button Content="Производство изделий" Click="OpenProduction_Click" Margin="5"/>
-            <Button Content="Отчеты" Click="OpenReports_Click" Margin="5"/>
+            <Button Content="Инвентаризация" Click="OpenInventory_Click" Margin="5">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <Button Content="Список заказов" Click="OpenOrders_Click" Margin="5">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <Button Content="Оформление заказа" Click="OpenOrderForm_Click" Margin="5">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <Button Content="Производство изделий" Click="OpenProduction_Click" Margin="5">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <Button Content="Отчеты" Click="OpenReports_Click" Margin="5">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

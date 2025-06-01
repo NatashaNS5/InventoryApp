@@ -25,12 +25,30 @@ Title="Управленческие отчеты" Height="500" Width="800">
                 <TextBlock Text="По:" Margin="10,0,5,0"/>
                 <DatePicker x:Name="EndDatePicker" Margin="0,5"/>
             </StackPanel>
-            <Button x:Name="ShowStockReportButton" Content="Показать остатки" Click="ShowStockReport_Click" Margin="0,5"/>
-            <Button x:Name="ShowMovementReportButton" Content="Показать движение" Click="ShowMovementReport_Click" Margin="0,5"/>
+            <Button x:Name="ShowStockReportButton" Content="Показать остатки" Click="ShowStockReport_Click" Margin="0,5">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <Button x:Name="ShowMovementReportButton" Content="Показать движение" Click="ShowMovementReport_Click" Margin="0,5">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
         </StackPanel>
         <DataGrid x:Name="ReportGrid" Grid.Row="2" AutoGenerateColumns="True" Margin="10"/>
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
-            <Button x:Name="PrintButton" Content="Печать" Click="PrintReport_Click" Margin="5"/>
+            <Button x:Name="PrintButton" Content="Печать" Click="PrintReport_Click" Margin="5">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>
