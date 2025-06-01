@@ -123,7 +123,6 @@ namespace InventoryApp.Services
                 if (!_context.Materials.Any(m => m.Id == record.MaterialId))
                     throw new ArgumentException($"Материал с ID {record.MaterialId} не найдено.");
 
-                // Вычитаем использованный материал из остатков
                 var material = _context.Materials.Find(record.MaterialId);
                 if (material != null)
                 {
@@ -179,25 +178,22 @@ namespace InventoryApp.Services
                     ProductName = g.Key.ProductName,
                     InitialStock = 0,
                     Receipts = 0,
-                    Issues = g.Any() ? g.Sum(pr => pr.ActualMaterialUsage) : 0, // Проверка на наличие данных
+                    Issues = g.Any() ? g.Sum(pr => pr.ActualMaterialUsage) : 0, 
                     FinalStock = 0
                 })
                 .ToList();
 
-            // Рассчитываем начальный и конечный остаток
             var materials = _context.Materials.ToList();
             foreach (var movement in groupedRecords)
             {
                 var material = materials.FirstOrDefault(m => m.Name == movement.MaterialName);
                 if (material != null)
                 {
-                    // Начальный остаток: текущий остаток + общий расход до периода
                     var totalUsageBeforePeriod = _context.ProductionRecords
                         .Where(pr => pr.MaterialId == material.Id && pr.ProductionDate < startDate)
                         .Sum(pr => pr.ActualMaterialUsage);
                     movement.InitialStock = material.StockQuantity + totalUsageBeforePeriod;
 
-                    // Конечный остаток: текущий остаток минус расход в периоде
                     var totalUsageInPeriod = _context.ProductionRecords
                         .Where(pr => pr.MaterialId == material.Id && pr.ProductionDate >= startDate && pr.ProductionDate <= endDate)
                         .Sum(pr => pr.ActualMaterialUsage);
@@ -206,7 +202,6 @@ namespace InventoryApp.Services
                 Debug.WriteLine($"Movement: {movement.MaterialName}, Product: {movement.ProductName}, Issues: {movement.Issues}, InitialStock: {movement.InitialStock}, FinalStock: {movement.FinalStock}");
             }
 
-            // Добавляем материалы без движения
             foreach (var material in materials)
             {
                 if (!groupedRecords.Any(m => m.MaterialName == material.Name))
