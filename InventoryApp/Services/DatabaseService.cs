@@ -123,6 +123,17 @@ namespace InventoryApp.Services
                 if (!_context.Materials.Any(m => m.Id == record.MaterialId))
                     throw new ArgumentException($"Материал с ID {record.MaterialId} не найдено.");
 
+                // Вычитаем использованный материал из остатков
+                var material = _context.Materials.Find(record.MaterialId);
+                if (material != null)
+                {
+                    if (material.StockQuantity < record.ActualMaterialUsage)
+                        throw new InvalidOperationException($"Недостаточно материала {material.Name}. Остаток: {material.StockQuantity}, требуется: {record.ActualMaterialUsage}.");
+                    material.StockQuantity -= record.ActualMaterialUsage;
+                    material.ActualQuantity = material.StockQuantity;
+                    _context.Materials.Update(material);
+                }
+
                 Debug.WriteLine($"Saving ProductionRecord: ProductId={record.ProductId}, MaterialId={record.MaterialId}, Quantity={record.Quantity}, ActualMaterialUsage={record.ActualMaterialUsage}");
                 _context.ProductionRecords.Add(record);
                 _context.SaveChanges();
@@ -149,33 +160,78 @@ namespace InventoryApp.Services
         public List<MaterialMovement> GetMaterialMovementReport(DateTime startDate, DateTime endDate)
         {
             var movements = new List<MaterialMovement>();
-            var materials = _context.Materials
-                .Include(m => m.InventoryRecords)
+            var productionRecords = _context.ProductionRecords
+                .Include(pr => pr.Material)
+                .Include(pr => pr.Product)
+                .Where(pr => pr.ProductionDate >= startDate && pr.ProductionDate <= endDate)
                 .ToList();
 
+            if (!productionRecords.Any())
+            {
+                Debug.WriteLine($"Нет записей в ProductionRecords за период с {startDate:dd.MM.yyyy} по {endDate:dd.MM.yyyy}");
+            }
+
+            var groupedRecords = productionRecords
+                .GroupBy(pr => new { pr.MaterialId, MaterialName = pr.Material.Name, ProductName = pr.Product.Name })
+                .Select(g => new MaterialMovement
+                {
+                    MaterialName = g.Key.MaterialName,
+                    ProductName = g.Key.ProductName,
+                    InitialStock = 0,
+                    Receipts = 0,
+                    Issues = g.Any() ? g.Sum(pr => pr.ActualMaterialUsage) : 0, // Проверка на наличие данных
+                    FinalStock = 0
+                })
+                .ToList();
+
+            // Рассчитываем начальный и конечный остаток
+            var materials = _context.Materials.ToList();
+            foreach (var movement in groupedRecords)
+            {
+                var material = materials.FirstOrDefault(m => m.Name == movement.MaterialName);
+                if (material != null)
+                {
+                    // Начальный остаток: текущий остаток + общий расход до периода
+                    var totalUsageBeforePeriod = _context.ProductionRecords
+                        .Where(pr => pr.MaterialId == material.Id && pr.ProductionDate < startDate)
+                        .Sum(pr => pr.ActualMaterialUsage);
+                    movement.InitialStock = material.StockQuantity + totalUsageBeforePeriod;
+
+                    // Конечный остаток: текущий остаток минус расход в периоде
+                    var totalUsageInPeriod = _context.ProductionRecords
+                        .Where(pr => pr.MaterialId == material.Id && pr.ProductionDate >= startDate && pr.ProductionDate <= endDate)
+                        .Sum(pr => pr.ActualMaterialUsage);
+                    movement.FinalStock = material.StockQuantity - totalUsageInPeriod + movement.InitialStock - material.StockQuantity;
+                }
+                Debug.WriteLine($"Movement: {movement.MaterialName}, Product: {movement.ProductName}, Issues: {movement.Issues}, InitialStock: {movement.InitialStock}, FinalStock: {movement.FinalStock}");
+            }
+
+            // Добавляем материалы без движения
             foreach (var material in materials)
             {
-                var records = material.InventoryRecords
-                    .Where(ir => ir.InventoryDate >= startDate && ir.InventoryDate <= endDate)
-                    .ToList();
-
-                var movement = new MaterialMovement
+                if (!groupedRecords.Any(m => m.MaterialName == material.Name))
                 {
-                    MaterialName = material.Name,
-                    InitialStock = material.StockQuantity,
-                    Receipts = 0,
-                    Issues = records.Any() ? Math.Max(0, material.ActualQuantity - material.StockQuantity) : 0,
-                    FinalStock = material.StockQuantity
-                };
-                movements.Add(movement);
+                    movements.Add(new MaterialMovement
+                    {
+                        MaterialName = material.Name,
+                        ProductName = "Нет производства",
+                        InitialStock = material.StockQuantity,
+                        Receipts = 0,
+                        Issues = 0,
+                        FinalStock = material.StockQuantity
+                    });
+                }
             }
-            return movements;
+
+            movements.AddRange(groupedRecords);
+            return movements.OrderBy(m => m.MaterialName).ThenBy(m => m.ProductName).ToList();
         }
     }
 
     public class MaterialMovement
     {
         public string MaterialName { get; set; }
+        public string ProductName { get; set; }
         public double InitialStock { get; set; }
         public double Receipts { get; set; }
         public double Issues { get; set; }

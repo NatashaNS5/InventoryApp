@@ -11,13 +11,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using TextAlignment = iText.Layout.Properties.TextAlignment;
+using Image = iText.Layout.Element.Image;
 
 namespace InventoryApp
 {
-    /// <summary>
-    /// Логика взаимодействия для ReportsWindow.xaml
-    /// </summary>
     public partial class ReportsWindow : Window
     {
         private ObservableCollection<object> _reportData;
@@ -35,36 +34,94 @@ namespace InventoryApp
 
         private void ShowStockReport_Click(object sender, RoutedEventArgs e)
         {
-            var materials = _dbService.GetMaterialStockReport();
-            _reportData.Clear();
-            foreach (var material in materials)
+            try
             {
-                _reportData.Add(new { MaterialName = material.Name, StockQuantity = material.StockQuantity });
+                ReportGrid.Columns.Clear();
+                ReportGrid.Columns.Add(new DataGridTextColumn { Header = "Материал", Binding = new System.Windows.Data.Binding("MaterialName") });
+                ReportGrid.Columns.Add(new DataGridTextColumn { Header = "Остаток", Binding = new System.Windows.Data.Binding("StockQuantity") });
+
+                var materials = _dbService.GetMaterialStockReport();
+                _reportData.Clear();
+                foreach (var material in materials)
+                {
+                    Debug.WriteLine($"Material: {material.Name}, StockQuantity: {material.StockQuantity}");
+                    _reportData.Add(new
+                    {
+                        MaterialName = material.Name,
+                        StockQuantity = material.StockQuantity
+                    });
+                }
+                if (_reportData.Count == 0)
+                {
+                    MessageBox.Show("Нет данных о запасах материалов.", "Предупреждение");
+                }
+                else
+                {
+                    Debug.WriteLine($"Загружено {_reportData.Count} записей об остатках.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке отчета: {ex.Message}", "Ошибка");
+                Debug.WriteLine($"Ошибка в ShowStockReport: {ex.Message}");
             }
         }
 
         private void ShowMovementReport_Click(object sender, RoutedEventArgs e)
         {
-            if (!StartDatePicker.SelectedDate.HasValue || !EndDatePicker.SelectedDate.HasValue)
+            try
             {
-                MessageBox.Show("Выберите даты периода.", "Ошибка");
-                return;
-            }
-
-            var startDate = StartDatePicker.SelectedDate.Value;
-            var endDate = EndDatePicker.SelectedDate.Value;
-            var movements = _dbService.GetMaterialMovementReport(startDate, endDate);
-            _reportData.Clear();
-            foreach (var movement in movements)
-            {
-                _reportData.Add(new
+                if (!StartDatePicker.SelectedDate.HasValue || !EndDatePicker.SelectedDate.HasValue)
                 {
-                    movement.MaterialName,
-                    movement.InitialStock,
-                    movement.Receipts,
-                    movement.Issues,
-                    movement.FinalStock
-                });
+                    MessageBox.Show("Выберите даты периода.", "Ошибка");
+                    return;
+                }
+
+                var startDate = StartDatePicker.SelectedDate.Value;
+                var endDate = EndDatePicker.SelectedDate.Value;
+
+                if (startDate > endDate)
+                {
+                    MessageBox.Show("Дата начала не может быть позже даты окончания.", "Ошибка");
+                    return;
+                }
+
+                ReportGrid.Columns.Clear();
+                ReportGrid.Columns.Add(new DataGridTextColumn { Header = "Материал", Binding = new System.Windows.Data.Binding("MaterialName") });
+                ReportGrid.Columns.Add(new DataGridTextColumn { Header = "Изделие", Binding = new System.Windows.Data.Binding("ProductName") });
+                ReportGrid.Columns.Add(new DataGridTextColumn { Header = "Начальный остаток", Binding = new System.Windows.Data.Binding("InitialStock") });
+                ReportGrid.Columns.Add(new DataGridTextColumn { Header = "Поступления", Binding = new System.Windows.Data.Binding("Receipts") });
+                ReportGrid.Columns.Add(new DataGridTextColumn { Header = "Расход", Binding = new System.Windows.Data.Binding("Issues") });
+                ReportGrid.Columns.Add(new DataGridTextColumn { Header = "Конечный остаток", Binding = new System.Windows.Data.Binding("FinalStock") });
+
+                var movements = _dbService.GetMaterialMovementReport(startDate, endDate);
+                _reportData.Clear();
+                foreach (var movement in movements)
+                {
+                    Debug.WriteLine($"Movement: {movement.MaterialName}, Product: {movement.ProductName}, Issues: {movement.Issues}, InitialStock: {movement.InitialStock}, FinalStock: {movement.FinalStock}");
+                    _reportData.Add(new
+                    {
+                        MaterialName = movement.MaterialName,
+                        ProductName = movement.ProductName,
+                        InitialStock = movement.InitialStock,
+                        Receipts = movement.Receipts,
+                        Issues = movement.Issues,
+                        FinalStock = movement.FinalStock
+                    });
+                }
+                if (_reportData.Count == 0)
+                {
+                    MessageBox.Show($"Нет данных о движении материалов за период с {startDate:dd.MM.yyyy} по {endDate:dd.MM.yyyy}. Проверьте ProductionRecords.", "Предупреждение");
+                }
+                else
+                {
+                    Debug.WriteLine($"Загружено {_reportData.Count} записей о движении.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке отчета: {ex.Message}", "Ошибка");
+                Debug.WriteLine($"Ошибка в ShowMovementReport: {ex.Message}");
             }
         }
 
@@ -93,7 +150,6 @@ namespace InventoryApp
                     {
                         var document = new Document(pdf);
 
-                        string projectRoot = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\"));
                         string logoPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Images", "logo-03.jpg");
                         if (File.Exists(logoPath))
                         {
@@ -107,7 +163,6 @@ namespace InventoryApp
                             MessageBox.Show($"Логотип не найден по пути: {logoPath}. Отчет будет создан без логотипа.", "Предупреждение");
                         }
 
-
                         string fontPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), "times.ttf");
                         if (!File.Exists(fontPath))
                         {
@@ -119,14 +174,14 @@ namespace InventoryApp
                             .SetFont(font)
                             .SetFontSize(16)
                             .SetBold()
-                            .SetTextAlignment(iText.Layout.Properties.TextAlignment.CENTER));
+                            .SetTextAlignment(TextAlignment.CENTER));
 
                         if (StartDatePicker.SelectedDate.HasValue && EndDatePicker.SelectedDate.HasValue)
                         {
                             document.Add(new Paragraph($"Период: {StartDatePicker.SelectedDate.Value:dd.MM.yyyy} - {EndDatePicker.SelectedDate.Value:dd.MM.yyyy}")
                                 .SetFont(font)
                                 .SetFontSize(12)
-                                .SetTextAlignment(iText.Layout.Properties.TextAlignment.CENTER));
+                                .SetTextAlignment(TextAlignment.CENTER));
                         }
 
                         document.Add(new Paragraph(" ").SetFont(font));
@@ -142,7 +197,7 @@ namespace InventoryApp
                                 .Add(new Paragraph(GetDisplayName(prop.Name))
                                     .SetFont(font)
                                     .SetBold())
-                                .SetTextAlignment(iText.Layout.Properties.TextAlignment.CENTER));
+                                .SetTextAlignment(TextAlignment.CENTER));
                         }
 
                         foreach (var item in _reportData)
@@ -153,7 +208,7 @@ namespace InventoryApp
                                 table.AddCell(new Cell()
                                     .Add(new Paragraph(value)
                                         .SetFont(font))
-                                    .SetTextAlignment(iText.Layout.Properties.TextAlignment.LEFT));
+                                    .SetTextAlignment(TextAlignment.LEFT));
                             }
                         }
 
@@ -162,7 +217,7 @@ namespace InventoryApp
                         document.Add(new Paragraph($"Дата формирования: {DateTime.Now:dd.MM.yyyy HH:mm}")
                             .SetFont(font)
                             .SetFontSize(10)
-                            .SetTextAlignment(iText.Layout.Properties.TextAlignment.RIGHT));
+                            .SetTextAlignment(TextAlignment.RIGHT));
 
                         document.Close();
                     }
@@ -182,6 +237,7 @@ namespace InventoryApp
             return propertyName switch
             {
                 "MaterialName" => "Материал",
+                "ProductName" => "Изделие",
                 "StockQuantity" => "Остаток",
                 "InitialStock" => "Начальный остаток",
                 "Receipts" => "Поступления",

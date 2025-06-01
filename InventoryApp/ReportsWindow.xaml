@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:InventoryApp"
         mc:Ignorable="d"
-Title="Управленческие отчеты" Height="500" Width="800">
+Title="Управленческие отчеты" Height="500" Width="800" MinHeight="500" MinWidth="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -40,7 +40,7 @@ Title="Управленческие отчеты" Height="500" Width="800">
                 </Button.Resources>
             </Button>
         </StackPanel>
-        <DataGrid x:Name="ReportGrid" Grid.Row="2" AutoGenerateColumns="True" Margin="10"/>
+        <DataGrid x:Name="ReportGrid" Grid.Row="2" Margin="10" AutoGenerateColumns="False"/>
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
             <Button x:Name="PrintButton" Content="Печать" Click="PrintReport_Click" Margin="5">
                 <Button.Resources>
