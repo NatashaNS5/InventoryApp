@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:InventoryApp"
         mc:Ignorable="d"
-        Title="Производство изделий" Height="400" Width="600">
+       Title="Производство изделий" Height="400" Width="600">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -17,16 +17,19 @@
             <TextBlock Text="Производство изделий" FontSize="18" FontWeight="Bold" Margin="10,0,0,0"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Margin="10">
-            <TextBlock Text="Изделие"/>
-            <ComboBox x:Name="ProductComboBox" DisplayMemberPath="Name" Margin="0,5"/>
-            <TextBlock Text="Количество"/>
-            <TextBox x:Name="QuantityTextBox" Margin="0,5"/>
-            <TextBlock Text="Фактически использовано материала"/>
-            <TextBox x:Name="ActualMaterialUsageTextBox" TextChanged="ActualMaterialUsageTextBox_TextChanged" Margin="0,5"/>
+            <TextBlock Text="Изделие" ToolTip="Выберите изделие для производства"/>
+            <ComboBox x:Name="ProductComboBox" DisplayMemberPath="Name" Margin="0,5" SelectionChanged="ProductComboBox_SelectionChanged"/>
+            <TextBlock Text="Материал" ToolTip="Выберите используемый материал"/>
+            <ComboBox x:Name="MaterialComboBox" DisplayMemberPath="Name" Margin="0,5" SelectionChanged="ValidateInputs"/>
+            <TextBlock Text="Количество" ToolTip="Введите количество произведенных изделий"/>
+            <TextBox x:Name="QuantityTextBox" Margin="0,5" TextChanged="QuantityTextBox_TextChanged" PreviewTextInput="NumberValidationTextBox"/>
+            <TextBlock Text="Фактически использовано материала" ToolTip="Введите количество использованного материала"/>
+            <TextBox x:Name="ActualMaterialUsageTextBox" Margin="0,5" TextChanged="ActualMaterialUsageTextBox_TextChanged" PreviewTextInput="DecimalValidationTextBox"/>
             <TextBlock x:Name="ExcessMessageTextBlock" Foreground="Red" Margin="0,5"/>
+            <TextBlock x:Name="CostTextBlock" Text="Себестоимость: 0" Margin="0,5"/>
         </StackPanel>
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
-            <Button x:Name="SaveButton" Content="Сохранить" Click="Save_Click" Margin="5">
+            <Button x:Name="SaveButton" Content="Сохранить" Click="Save_Click" Margin="5" IsEnabled="False">
                 <Button.Resources>
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="CornerRadius" Value="10"/>

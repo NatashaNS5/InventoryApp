@@ -47,6 +47,12 @@ namespace InventoryApp.Data
                 .WithMany()
                 .HasForeignKey(pr => pr.ProductId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ProductionRecord>()
+                .HasOne(pr => pr.Material)
+                .WithMany()
+                .HasForeignKey(pr => pr.MaterialId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

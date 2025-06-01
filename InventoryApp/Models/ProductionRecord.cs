@@ -20,8 +20,12 @@ namespace InventoryApp.Models
         public double ActualMaterialUsage { get; set; }
         [Required]
         public DateTime ProductionDate { get; set; }
-        public double ScrapAmount { get; set; } 
+        public double ScrapAmount { get; set; }
+        [Required]
+        public int MaterialId { get; set; }
         [ForeignKey("ProductId")]
         public Product Product { get; set; }
+        [ForeignKey("MaterialId")] 
+        public Material Material { get; set; }
     }
 }

@@ -114,8 +114,29 @@ namespace InventoryApp.Services
 
         public void SaveProduction(ProductionRecord record)
         {
-            _context.ProductionRecords.Add(record);
-            _context.SaveChanges();
+            try
+            {
+                if (record == null)
+                    throw new ArgumentNullException(nameof(record), "Запись производства не может быть null.");
+                if (!_context.Products.Any(p => p.Id == record.ProductId))
+                    throw new ArgumentException($"Изделие с ID {record.ProductId} не найдено.");
+                if (!_context.Materials.Any(m => m.Id == record.MaterialId))
+                    throw new ArgumentException($"Материал с ID {record.MaterialId} не найдено.");
+
+                Debug.WriteLine($"Saving ProductionRecord: ProductId={record.ProductId}, MaterialId={record.MaterialId}, Quantity={record.Quantity}, ActualMaterialUsage={record.ActualMaterialUsage}");
+                _context.ProductionRecords.Add(record);
+                _context.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                Debug.WriteLine($"DbUpdateException в SaveProduction: {ex.InnerException?.Message}");
+                throw new Exception("Ошибка при сохранении записи производства. Проверьте корректность данных.", ex);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Ошибка в SaveProduction: {ex.Message}");
+                throw new Exception("Неизвестная ошибка при сохранении записи производства.", ex);
+            }
         }
 
         public List<Material> GetMaterialStockReport()
