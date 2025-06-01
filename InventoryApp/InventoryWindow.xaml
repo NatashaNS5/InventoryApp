@@ -1,0 +1,66 @@
+﻿<Window x:Class="InventoryApp.InventoryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:InventoryApp"
+        mc:Ignorable="d"
+        Title="Инвентаризация" Height="450" Width="800">
+    <Window.Resources>
+        <SolidColorBrush x:Key="SecondaryColor1" Color="#D1EEFC"/>
+        <SolidColorBrush x:Key="SecondaryColor2" Color="#FFFCDA"/>
+        <Style x:Key="TableRowEven" TargetType="DataGridRow">
+            <Setter Property="Background" Value="{StaticResource SecondaryColor1}"/>
+        </Style>
+        <Style x:Key="TableRowOdd" TargetType="DataGridRow">
+            <Setter Property="Background" Value="{StaticResource SecondaryColor2}"/>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Margin="10">
+            <Image Source="/Images/logo-01.jpg" Width="50" Height="50"/>
+            <TextBlock Text="Инвентаризация" FontSize="18" FontWeight="Bold" Margin="10,0,0,0"/>
+        </StackPanel>
+        <DataGrid x:Name="MaterialsGrid" Grid.Row="1" AutoGenerateColumns="False" Margin="10">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Наименование" Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="Учетный остаток" Binding="{Binding StockQuantity}" Width="150"/>
+                <DataGridTemplateColumn Header="Реальный остаток" Width="150">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding ActualQuantity}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding ActualQuantity, UpdateSourceTrigger=PropertyChanged}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Расхождение (%)" Binding="{Binding DiscrepancyPercentage, StringFormat={}{0:F2}%}" Width="150"/>
+            </DataGrid.Columns>
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=ItemsSource.IndexOf, RelativeSource={RelativeSource Self}}" Value="0">
+                            <Setter Property="Background" Value="{StaticResource TableRowEven}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=ItemsSource.IndexOf, RelativeSource={RelativeSource Self}}" Value="1">
+                            <Setter Property="Background" Value="{StaticResource TableRowOdd}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+        </DataGrid>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+            <TextBlock x:Name="DiscrepancyMessageTextBlock" Foreground="Red" Margin="0,0,10,0"/>
+            <Button x:Name="SaveButton" Content="Сохранить" Click="Save_Click" Margin="5"/>
+            <Button x:Name="ApproveButton" Content="Утвердить (Директор)" Click="Approve_Click" Margin="5"/>
+        </StackPanel>
+    </Grid>
+</Window>

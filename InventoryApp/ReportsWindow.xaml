@@ -1,0 +1,49 @@
+﻿<Window x:Class="InventoryApp.ReportsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:InventoryApp"
+        mc:Ignorable="d"
+        Title="Управленческие отчеты" Height="500" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Margin="10">
+            <Image Source="/Images/logo-01.jpg" Width="100" Height="50"/>
+            <TextBlock Text="Управленческие отчеты" FontSize="18" FontWeight="Bold" Margin="10,0,0,0"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Margin="10">
+            <TextBlock Text="Период"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="С:" Margin="0,0,5,0"/>
+                <DatePicker x:Name="StartDatePicker" Margin="0,5"/>
+                <TextBlock Text="По:" Margin="10,0,5,0"/>
+                <DatePicker x:Name="EndDatePicker" Margin="0,5"/>
+            </StackPanel>
+            <Button x:Name="ShowStockReportButton" Content="Показать остатки" Click="ShowStockReport_Click" Margin="0,5"/>
+            <Button x:Name="ShowMovementReportButton" Content="Показать движение" Click="ShowMovementReport_Click" Margin="0,5"/>
+        </StackPanel>
+        <DataGrid x:Name="ReportGrid" Grid.Row="2" AutoGenerateColumns="True" Margin="10">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=ItemsSource.IndexOf, RelativeSource={RelativeSource Self}}" Value="0">
+                            <Setter Property="Background" Value="{StaticResource TableRowEven}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=ItemsSource.IndexOf, RelativeSource={RelativeSource Self}}" Value="1">
+                            <Setter Property="Background" Value="{StaticResource TableRowOdd}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+        </DataGrid>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+            <Button x:Name="PrintButton" Content="Печать" Click="PrintReport_Click" Margin="5"/>
+        </StackPanel>
+    </Grid>
+</Window>

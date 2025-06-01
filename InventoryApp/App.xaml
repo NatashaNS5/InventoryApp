@@ -4,6 +4,27 @@
              xmlns:local="clr-namespace:InventoryApp"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <SolidColorBrush x:Key="PrimaryColor1" Color="#B5D5CA"/>
+            <SolidColorBrush x:Key="PrimaryColor2" Color="#E0A9AF"/>
+            <SolidColorBrush x:Key="SecondaryColor1" Color="#D1EEFC"/>
+            <SolidColorBrush x:Key="SecondaryColor2" Color="#FFFCDA"/>
+            <SolidColorBrush x:Key="TextColor" Color="Black"/>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+                <Setter Property="FontSize" Value="14"/>
+            </Style>
+            <Style TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource PrimaryColor1}"/>
+                <Setter Property="Padding" Value="10,5"/>
+                <Setter Property="Margin" Value="5"/>
+            </Style>
+            <Style x:Key="TableRowEven" TargetType="DataGridRow">
+                <Setter Property="Background" Value="{StaticResource SecondaryColor1}"/>
+            </Style>
+            <Style x:Key="TableRowOdd" TargetType="DataGridRow">
+                <Setter Property="Background" Value="{StaticResource SecondaryColor2}"/>
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

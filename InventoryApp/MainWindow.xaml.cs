@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using InventoryApp.ViewModels;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -19,6 +20,31 @@ namespace InventoryApp
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void OpenInventory_Click(object sender, RoutedEventArgs e)
+        {
+            new InventoryWindow().Show();
+        }
+
+        private void OpenOrders_Click(object sender, RoutedEventArgs e)
+        {
+            new OrdersWindow().Show();
+        }
+
+        private void OpenOrderForm_Click(object sender, RoutedEventArgs e)
+        {
+            new OrderFormWindow().Show();
+        }
+
+        private void OpenProduction_Click(object sender, RoutedEventArgs e)
+        {
+            new ProductionWindow().Show();
+        }
+
+        private void OpenReports_Click(object sender, RoutedEventArgs e)
+        {
+            new ReportsWindow().Show();
         }
     }
 }
