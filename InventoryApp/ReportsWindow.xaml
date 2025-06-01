@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:InventoryApp"
         mc:Ignorable="d"
-        Title="Управленческие отчеты" Height="500" Width="800">
+Title="Управленческие отчеты" Height="500" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -28,20 +28,7 @@
             <Button x:Name="ShowStockReportButton" Content="Показать остатки" Click="ShowStockReport_Click" Margin="0,5"/>
             <Button x:Name="ShowMovementReportButton" Content="Показать движение" Click="ShowMovementReport_Click" Margin="0,5"/>
         </StackPanel>
-        <DataGrid x:Name="ReportGrid" Grid.Row="2" AutoGenerateColumns="True" Margin="10">
-            <DataGrid.RowStyle>
-                <Style TargetType="DataGridRow">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Path=ItemsSource.IndexOf, RelativeSource={RelativeSource Self}}" Value="0">
-                            <Setter Property="Background" Value="{StaticResource TableRowEven}"/>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Path=ItemsSource.IndexOf, RelativeSource={RelativeSource Self}}" Value="1">
-                            <Setter Property="Background" Value="{StaticResource TableRowOdd}"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </DataGrid.RowStyle>
-        </DataGrid>
+        <DataGrid x:Name="ReportGrid" Grid.Row="2" AutoGenerateColumns="True" Margin="10"/>
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
             <Button x:Name="PrintButton" Content="Печать" Click="PrintReport_Click" Margin="5"/>
         </StackPanel>
