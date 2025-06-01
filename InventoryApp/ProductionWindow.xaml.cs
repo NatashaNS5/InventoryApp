@@ -9,9 +9,6 @@ using System.Windows.Input;
 
 namespace InventoryApp
 {
-    /// <summary>
-    /// Логика взаимодействия для ProductionWindow.xaml
-    /// </summary>
     public partial class ProductionWindow : Window
     {
         private ObservableCollection<Product> _products;

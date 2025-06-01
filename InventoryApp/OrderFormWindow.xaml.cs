@@ -8,9 +8,6 @@ using System.Windows.Controls;
 
 namespace InventoryApp
 {
-    /// <summary>
-    /// Логика взаимодействия для OrderFormWindow.xaml
-    /// </summary>
     public partial class OrderFormWindow : Window
     {
         private ObservableCollection<OrderItem> _orderItems;

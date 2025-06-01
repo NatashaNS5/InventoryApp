@@ -17,9 +17,6 @@ using System.Windows.Shapes;
 
 namespace InventoryApp.ViewModels
 {
-    /// <summary>
-    /// Логика взаимодействия для OrdersWindow.xaml
-    /// </summary>
     public partial class OrdersWindow : Window
     {
         private ObservableCollection<Order> _orders;

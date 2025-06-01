@@ -7,9 +7,6 @@ using System.Windows;
 
 namespace InventoryApp
 {
-    /// <summary>
-    /// Логика взаимодействия для InventoryWindow.xaml
-    /// </summary>
     public partial class InventoryWindow : Window
     {
         private ObservableCollection<Material> _materials;
