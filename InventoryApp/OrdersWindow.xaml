@@ -5,7 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:InventoryApp.ViewModels"
         mc:Ignorable="d"
-     Title="Список заказов" Height="450" Width="800" MinHeight="450" MinWidth="800">
+        Title="Список заказов" Height="450" Width="800" MinHeight="450" MinWidth="800">
+    <Window.Resources>
+        <SolidColorBrush x:Key="SecondaryColor1" Color="#D1EEFC"/>
+        <SolidColorBrush x:Key="SecondaryColor2" Color="#FFFCDA"/>
+        <Style x:Key="AlternatingRowStyle" TargetType="DataGridRow">
+            <Style.Triggers>
+                <Trigger Property="AlternationIndex" Value="0">
+                    <Setter Property="Background" Value="{StaticResource SecondaryColor1}"/>
+                </Trigger>
+                <Trigger Property="AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="{StaticResource SecondaryColor2}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -15,7 +29,7 @@
             <Image Source="/Images/logo-01.jpg" Width="50" Height="50"/>
             <TextBlock Text="Список заказов" FontSize="18" FontWeight="Bold" Margin="10,0,0,0"/>
         </StackPanel>
-        <DataGrid x:Name="OrdersGrid" Grid.Row="1" AutoGenerateColumns="False" Margin="10">
+        <DataGrid x:Name="OrdersGrid" Grid.Row="1" AutoGenerateColumns="False" Margin="10" AlternationCount="2">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Номер" Binding="{Binding OrderNumber}" Width="*"/>
                 <DataGridTextColumn Header="Дата" Binding="{Binding OrderDate, StringFormat=yyyy-MM-dd}" Width="100"/>
@@ -25,16 +39,7 @@
                 <DataGridTextColumn Header="Менеджер" Binding="{Binding Manager}" Width="150"/>
             </DataGrid.Columns>
             <DataGrid.RowStyle>
-                <Style TargetType="DataGridRow">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Path=ItemsSource.IndexOf, RelativeSource={RelativeSource Self}}" Value="0">
-                            <Setter Property="Background" Value="{StaticResource TableRowEven}"/>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Path=ItemsSource.IndexOf, RelativeSource={RelativeSource Self}}" Value="1">
-                            <Setter Property="Background" Value="{StaticResource TableRowOdd}"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
+                <Style TargetType="DataGridRow" BasedOn="{StaticResource AlternatingRowStyle}"/>
             </DataGrid.RowStyle>
         </DataGrid>
     </Grid>
